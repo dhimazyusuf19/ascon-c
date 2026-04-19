@@ -1,2 +1,0 @@
-/usr/bin/ar qc libascon_ref_trace_lib.a CMakeFiles/ascon_ref_trace_lib.dir/crypto_aead/asconaead128/ref/aead.c.o CMakeFiles/ascon_ref_trace_lib.dir/crypto_aead/asconaead128/ref/printstate.c.o
-/usr/bin/ranlib libascon_ref_trace_lib.a

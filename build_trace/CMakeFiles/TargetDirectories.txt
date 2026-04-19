@@ -1,7 +1,0 @@
-/home/runner/work/ascon-c/ascon-c/build_trace/CMakeFiles/ascon_ref_trace_lib.dir
-/home/runner/work/ascon-c/ascon-c/build_trace/CMakeFiles/ascon_trace.dir
-/home/runner/work/ascon-c/ascon-c/build_trace/CMakeFiles/crypto_aead_asconaead128_ref.dir
-/home/runner/work/ascon-c/ascon-c/build_trace/CMakeFiles/genkat_crypto_aead_asconaead128_ref.dir
-/home/runner/work/ascon-c/ascon-c/build_trace/CMakeFiles/test.dir
-/home/runner/work/ascon-c/ascon-c/build_trace/CMakeFiles/edit_cache.dir
-/home/runner/work/ascon-c/ascon-c/build_trace/CMakeFiles/rebuild_cache.dir
