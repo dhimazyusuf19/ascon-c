@@ -247,8 +247,14 @@ cmake --build . --target ascon_trace --config Release
 ## Run
 
 ```bash
-# default hardcoded test vector
+# default hardcoded test vector (Linux / macOS / WSL / MSYS2)
 ./ascon_trace
+
+# same command on Windows MSYS2 UCRT64 shell
+./ascon_trace.exe
+
+# on Windows "x64 Native Tools Command Prompt" (Visual Studio)
+.\Release\ascon_trace.exe
 
 # custom inputs (all hex, no 0x prefix; use "" for empty AD or plaintext)
 ./ascon_trace <key_hex> <nonce_hex> <ad_hex> <plaintext_hex>
@@ -324,9 +330,90 @@ ctest
 ```
 
 
-Build and test all Ascon C targets on Windows:
+## Building on Windows
 
+Two supported toolchains are available on Windows: **MSYS2/MinGW-w64** (recommended
+for a Unix-like workflow) and **Visual Studio (MSVC)**.
+
+---
+
+### Option A – MSYS2 / MinGW-w64 (recommended)
+
+**Prerequisites** (one-time setup):
+
+1. Download and install **MSYS2** from <https://www.msys2.org/> (run the
+   installer, accept defaults).
+2. Open **"MSYS2 UCRT64"** from the Start Menu.
+3. Update the package database and install the required tools:
+
+   ```bash
+   pacman -Syu
+   # Close the terminal if asked, then reopen "MSYS2 UCRT64" and run:
+   pacman -S --needed \
+     mingw-w64-ucrt-x86_64-gcc \
+     mingw-w64-ucrt-x86_64-cmake \
+     mingw-w64-ucrt-x86_64-ninja \
+     git
+   ```
+
+**Build and test** (inside the "MSYS2 UCRT64" shell, from the repository root):
+
+```bash
+mkdir build && cd build
+cmake .. -G Ninja
+cmake --build .
+ctest
 ```
+
+**Build and run only `ascon_trace`:**
+
+```bash
+cmake --build . --target ascon_trace
+./ascon_trace.exe
+```
+
+---
+
+### Option B – Visual Studio (MSVC)
+
+**Prerequisites** (one-time setup):
+
+1. Download and install **Visual Studio Community** (free) from
+   <https://visualstudio.microsoft.com/> (or the lighter
+   **Build Tools for Visual Studio**).
+2. In the installer, select the **"Desktop development with C++"** workload.
+   CMake support is bundled automatically with this workload.
+3. (Optional) Install **Git for Windows** from <https://git-scm.com/> to clone
+   the repository from the command prompt.
+
+**Build and test** (open **"x64 Native Tools Command Prompt for VS"** from the
+Start Menu, then `cd` to the repository root):
+
+```bat
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Release
+ctest -C Release
+```
+
+**Build and run only `ascon_trace`:**
+
+```bat
+cmake --build . --target ascon_trace --config Release
+.\Release\ascon_trace.exe
+```
+
+> **Tip – VS Code users:** Open the repository folder in VS Code with the
+> *CMake Tools* extension installed.  Select your kit (e.g. "Visual Studio
+> Community 2022 – amd64"), press **Build**, and use the integrated terminal to
+> run `ctest -C Release` or `.\Release\ascon_trace.exe`.
+
+---
+
+Build and test all Ascon C targets on Windows (generic, works for both toolchains):
+
+```bat
 mkdir build
 cd build
 cmake ..
