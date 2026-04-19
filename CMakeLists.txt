@@ -53,6 +53,32 @@ message(STATUS "cmake host system processor: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
 set(KAT_PATH KAT)
 set(TEST_PATH tests)
+# ── ascon_trace: step-by-step debug / trace tool ──────────────────────────────
+set(TRACE_IMPL_PATH crypto_aead/asconaead128/ref)
+file(GLOB TRACE_IMPL_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+     "${TRACE_IMPL_PATH}/*.[cS]")
+add_library(ascon_ref_trace_lib ${TRACE_IMPL_FILES})
+target_include_directories(ascon_ref_trace_lib PUBLIC
+    ${TRACE_IMPL_PATH} ${TEST_PATH})
+target_compile_definitions(ascon_ref_trace_lib PUBLIC ASCON_PRINT_STATE)
+target_compile_options(ascon_ref_trace_lib PUBLIC
+    $<$<CONFIG:RELEASE>:${REL_FLAGS}>
+    $<$<CONFIG:DEBUG>:${DBG_FLAGS}>)
+
+add_executable(ascon_trace tools/ascon_trace.c)
+target_include_directories(ascon_trace PRIVATE ${TRACE_IMPL_PATH} ${TEST_PATH})
+target_compile_definitions(ascon_trace PRIVATE ASCON_PRINT_STATE)
+target_compile_options(ascon_trace PRIVATE
+    $<$<CONFIG:RELEASE>:${REL_FLAGS}>
+    $<$<CONFIG:DEBUG>:${DBG_FLAGS}>)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13.0")
+  target_link_options(ascon_trace PRIVATE
+      $<$<CONFIG:RELEASE>:${REL_FLAGS}>
+      $<$<CONFIG:DEBUG>:${DBG_FLAGS}>)
+endif()
+target_link_libraries(ascon_trace PRIVATE ascon_ref_trace_lib)
+# ──────────────────────────────────────────────────────────────────────────────
+
 foreach(CRYPTO aead hash cxof auth)
   foreach(VER ${VERSION_LIST} "")
     foreach(ALG ${ALG_LIST})

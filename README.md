@@ -211,6 +211,107 @@ scripts/size-all.sh asconaead128 asconxof128 asconaeadxof128 asconprfv13 asconpr
 Performance results for other Ascon variants and versions can be found in git branch [v1.2](https://github.com/ascon/ascon-c/tree/v1.2) and [v1.3](https://github.com/ascon/ascon-c/tree/v1.3).
 
 
+# Ascon-AEAD128 Step-by-Step Trace (`ascon_trace`)
+
+`ascon_trace` is a standalone demo/CLI tool that runs **Ascon-AEAD128** encrypt +
+decrypt using the reference implementation and prints every internal state
+transition so you can follow the algorithm from input to output.
+
+## Build
+
+### Linux / macOS / WSL
+
+```bash
+mkdir build && cd build
+cmake ..
+cmake --build . --target ascon_trace
+```
+
+### Windows (MSYS2 UCRT64 or MinGW)
+
+```bash
+mkdir build && cd build
+cmake .. -G Ninja
+cmake --build . --target ascon_trace
+```
+
+### Windows (Visual Studio / MSVC)
+
+```bat
+mkdir build
+cd build
+cmake ..
+cmake --build . --target ascon_trace --config Release
+```
+
+## Run
+
+```bash
+# default hardcoded test vector
+./ascon_trace
+
+# custom inputs (all hex, no 0x prefix; use "" for empty AD or plaintext)
+./ascon_trace <key_hex> <nonce_hex> <ad_hex> <plaintext_hex>
+
+# example – "Hello" as plaintext, no associated data
+./ascon_trace 000102030405060708090a0b0c0d0e0f \
+              101112131415161718191a1b1c1d1e1f \
+              "" 48656c6c6f
+```
+
+## Example output (truncated)
+
+```
+============================================================
+ Ascon-AEAD128 Trace  (NIST SP 800-232)
+============================================================
+
+[INPUT]
+  key                  = 000102030405060708090a0b0c0d0e0f
+  nonce                = 101112131415161718191a1b1c1d1e1f
+  assoc data           = 303132333435363738393a3b3c3d3e3f
+  plaintext            = 202122232425262728292a2b2c2d2e2f
+
+============================================================
+ ENCRYPTION  (state trace printed by the ref implementation)
+============================================================
+
+encrypt
+ k[16]   = {0x00, 0x01, 0x02, ...}
+ n[16]   = {0x10, 0x11, 0x12, ...}
+ a[16]   = {0x30, 0x31, 0x32, ...}
+ m[16]   = {0x20, 0x21, 0x22, ...}
+init 1st key xor:  x0=0x00001000808c0001 x1=... x2=... x3=... x4=...
+ round output:     x0=0x6542b06eabd55b52 x1=... ...
+ ...
+init 2nd key xor:  x0=0xcde34900cdfce2c8 ...
+absorb adata:      x0=0xfad57c34feced3f8 ...
+ round output:     ...
+domain separation: x0=0xbc5accaf91c95243 ...
+absorb plaintext:  x0=0x9b7ce98bb2eb7363 ...
+ round output:     ...
+final 2nd key xor: x0=0x0cda853dbeb40df3 ...
+
+[ENCRYPTION RESULT]
+  ciphertext           = 6373ebb28be97c9bac090cf399c13ef1
+  tag                  = 3abfc0d209e8f4844c90814d13f32c59
+
+...
+
+[DECRYPTION RESULT]
+  recovered plaintext  = 202122232425262728292a2b2c2d2e2f
+
+  [OK] Decrypted plaintext matches original!
+============================================================
+```
+
+The trace output includes, per stage:
+- **Initialization**: IV || key || nonce loaded, then P12 applied, then second key XOR
+- **Associated data**: absorb each block + padding byte, P8 between blocks
+- **Domain separation**: XOR of 0x80 into the last state word
+- **Plaintext/ciphertext**: absorb each block, P8 between blocks
+- **Finalization**: key XOR + P12 + key XOR → tag extracted
+
 # Build and test
 
 Build and test all Ascon C targets using release flags (`-O2 -fomit-frame-pointer -march=native -mtune=native`):
