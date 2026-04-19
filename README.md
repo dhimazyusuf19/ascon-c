@@ -246,6 +246,8 @@ cmake --build . --target ascon_trace --config Release
 
 ## Run
 
+### Linux / macOS / WSL / MSYS2
+
 ```bash
 # default hardcoded test vector
 ./ascon_trace
@@ -257,6 +259,19 @@ cmake --build . --target ascon_trace --config Release
 ./ascon_trace 000102030405060708090a0b0c0d0e0f \
               101112131415161718191a1b1c1d1e1f \
               "" 48656c6c6f
+```
+
+### Windows (Visual Studio / MSVC – Command Prompt)
+
+```bat
+rem default hardcoded test vector
+.\Release\ascon_trace.exe
+
+rem custom inputs
+.\Release\ascon_trace.exe <key_hex> <nonce_hex> <ad_hex> <plaintext_hex>
+
+rem example – "Hello" as plaintext, no associated data
+.\Release\ascon_trace.exe 000102030405060708090a0b0c0d0e0f 101112131415161718191a1b1c1d1e1f "" 48656c6c6f
 ```
 
 ## Example output (truncated)
