@@ -1,0 +1,1 @@
+/usr/bin/cc -O3 -DNDEBUG -std=c99 -O2 -fomit-frame-pointer -march=native -mtune=native -Wl,--dependency-file=CMakeFiles/ascon_trace.dir/link.d CMakeFiles/ascon_trace.dir/tools/ascon_trace.c.o -o ascon_trace  libascon_ref_trace_lib.a
